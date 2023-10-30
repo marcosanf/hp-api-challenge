@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_card_swiper/flutter_card_swiper.dart';
-import 'package:hp_api_challenge/core/widgets/character_card.dart';
+import 'package:hp_api_challenge/core/app/colors.dart';
+import 'package:hp_api_challenge/core/widgets/button_primary.dart';
+import 'package:hp_api_challenge/feauture/home/ui/widget/character_card.dart';
+import 'package:hp_api_challenge/core/widgets/swipeable_list.dart';
 import 'package:hp_api_challenge/feauture/home/bloc/character_cubit.dart';
 import 'package:hp_api_challenge/feauture/home/bloc/character_state.dart';
 
@@ -9,7 +11,7 @@ class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  _HomePageState createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
@@ -18,9 +20,9 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Hogwarts Characters"),
-        backgroundColor: Color(0xffd6a304),
+        backgroundColor: HColors.primaryColor,
       ),
-      backgroundColor: Color(0xffd6a304),
+      backgroundColor: HColors.primaryColor,
       body: BlocBuilder<CharactersCubit, CharactersState>(
         builder: (context, state) {
           if (state is LoadingState) {
@@ -28,8 +30,13 @@ class _HomePageState extends State<HomePage> {
               child: CircularProgressIndicator(),
             );
           } else if (state is ErrorState) {
-            return const Center(
-              child: Icon(Icons.close),
+            return Center(
+              child: ButtonPrimary(
+                text: "Tentar novamente",
+                onPressed: () async {
+                  context.read<CharactersCubit>().getHPCharacters();
+                },
+              ),
             );
           } else if (state is LoadedState) {
             final characters = state.characters;
@@ -45,14 +52,7 @@ class _HomePageState extends State<HomePage> {
                 .toList();
             return Column(
               children: [
-                Flexible(
-                  child: CardSwiper(
-                    cardsCount: charactersWidgets.length,
-                    cardBuilder: (context, index, percentThresholdX,
-                            percentThresholdY) =>
-                        charactersWidgets[index],
-                  ),
-                ),
+                SwipeableList(widgetsList: charactersWidgets),
               ],
             );
           } else {
@@ -70,5 +70,5 @@ String getCharacterOccupation(bool isStaff, bool isStudent) {
   }
   if (isStaff && !isStudent) return "Staff";
   if (isStudent && !isStaff) return "Student";
-  return "Sdudent/Staff";
+  return "Student/Staff";
 }
