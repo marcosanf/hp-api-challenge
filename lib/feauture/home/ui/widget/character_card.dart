@@ -17,6 +17,7 @@ class CharacterCard extends StatelessWidget {
   Widget build(BuildContext context) {
     const cardHeight = 450.0;
     const cardWidth = 250.0;
+    const defaultImageSize = 100.0;
     return Center(
       child: Container(
         height: cardHeight,
@@ -36,6 +37,14 @@ class CharacterCard extends StatelessWidget {
                 ),
                 child: Image.network(
                   imagepath ?? "",
+                  errorBuilder: (context, Object obj, _) {
+                    return const Center(
+                      child: Icon(
+                        Icons.person_outline,
+                        size: defaultImageSize,
+                      ),
+                    );
+                  },
                   fit: BoxFit.cover,
                   width: double.infinity,
                 ),
